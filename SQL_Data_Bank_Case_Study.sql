@@ -15,5 +15,7 @@ select * from regions
 
 --Q1. How many unique nodes are there on the Data Bank system?
 
+select count(distinct node_id) nodes_count from customer_nodes
 
+--Q2. 
 
