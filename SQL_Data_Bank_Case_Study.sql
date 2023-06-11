@@ -24,5 +24,11 @@ group by region_id
 
 --Q3. How many customers are allocated to each region?
 
-select * from customer_nodes
+select region_id, count(distinct customer_id) customer_count from customer_nodes
+group by region_id
+
+--Q4. How many days on average are customers reallocated to a different node?
+
+select avg(cast(DATEDIFF(day, start_date, end_date) as bigint)) avg_days
+from customer_nodes
 
