@@ -22,6 +22,8 @@ select count(distinct node_id) nodes_count from customer_nodes
 select region_id, count(node_id) nodes_count from customer_nodes
 group by region_id
 
+--------------------------------------------------------------------
+
 select a.region_id, b.region_name, count(a.node_id) nodes_count 
 from customer_nodes a
 left join regions b
@@ -54,8 +56,17 @@ group by region_id
 
 --Q4. How many days on average are customers reallocated to a different node?
 
-select avg(cast(DATEDIFF(day, start_date, end_date) as bigint)) avg_days
+select avg(DATEDIFF(day, start_date, end_date)) avg_days
 from customer_nodes
+where end_date != '9999-12-31'
+
+SELECT AVG(DATEDIFF(day,start_date,end_date))
+FROM customer_nodes
+WHERE end_date != '9999-12-31';
+
+SELECT AVG(DATEDIFF(day,start_date,end_date))
+FROM customer_nodes
+WHERE end_date != '9999-12-31';
 
 SELECT c.region_id,
         region_name, 
