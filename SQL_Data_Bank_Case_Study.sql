@@ -19,6 +19,9 @@ select count(distinct node_id) nodes_count from customer_nodes
 
 --Q2. What is the number of nodes per region?
 
+select region_id, count(node_id) nodes_count from customer_nodes
+group by region_id
+
 select a.region_id, b.region_name, count(a.node_id) nodes_count 
 from customer_nodes a
 left join regions b
@@ -54,3 +57,10 @@ group by region_id
 select avg(cast(DATEDIFF(day, start_date, end_date) as bigint)) avg_days
 from customer_nodes
 
+SELECT c.region_id,
+        region_name, 
+        count(node_id) as total_nodes
+FROM customer_nodes c 
+JOIN regions r ON c.region_id = r.region_id
+GROUP BY c.region_id,region_name
+ORDER BY c.region_id
