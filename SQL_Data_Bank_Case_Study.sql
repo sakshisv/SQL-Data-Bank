@@ -30,25 +30,9 @@ group by region_id
 
 --Q4. How many days on average are customers reallocated to a different node?
 
-select avg(DATEDIFF(day, start_date, end_date)) avg_days
+select AVG(DATEDIFF(day, start_date, end_date)) avg_days
 from customer_nodes
 where end_date != '9999-12-31'
-
-SELECT AVG(DATEDIFF(day,start_date,end_date))
-FROM customer_nodes
-WHERE end_date != '9999-12-31';
-
-SELECT AVG(DATEDIFF(day,start_date,end_date))
-FROM customer_nodes
-WHERE end_date != '9999-12-31';
-
-SELECT c.region_id,
-        region_name, 
-        count(node_id) as total_nodes
-FROM customer_nodes c 
-JOIN regions r ON c.region_id = r.region_id
-GROUP BY c.region_id,region_name
-ORDER BY c.region_id
 
 --Q5. What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
 
