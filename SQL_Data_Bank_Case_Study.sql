@@ -21,33 +21,7 @@ select count(distinct node_id) nodes_count from customer_nodes
 
 select region_id, count(node_id) nodes_count from customer_nodes
 group by region_id
-
---------------------------------------------------------------------
-
-select a.region_id, b.region_name, count(a.node_id) nodes_count 
-from customer_nodes a
-left join regions b
-on a.region_id = b.region_id
-group by a.region_id, b.region_name
-
-select 
-	n.region_id,
-	r.region_name,
-	count(distinct n.node_id) unique_nodes,
-	count(n.node_id) number_of_nodes
-from customer_nodes n 
-left join regions r on n.region_id = r.region_id
-group by n.region_id, r.region_name
-order by n.region_id;
-
-SELECT c.region_id,
-	region_name,
-	COUNT(node_id) AS num_of_nodes
-FROM customer_nodes c
-INNER JOIN regions r
-ON c.region_id = r.region_id
-GROUP BY c.region_id, region_name
-ORDER BY num_of_nodes DESC;
+order by region_id
 
 --Q3. How many customers are allocated to each region?
 
@@ -75,3 +49,6 @@ FROM customer_nodes c
 JOIN regions r ON c.region_id = r.region_id
 GROUP BY c.region_id,region_name
 ORDER BY c.region_id
+
+--Q5. What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
+
