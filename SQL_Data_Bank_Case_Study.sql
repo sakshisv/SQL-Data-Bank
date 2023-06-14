@@ -51,5 +51,18 @@ on a.region_id = b.region_id
 
 
 
+---------- B. Customer Transactions ----------
+
+
+--Q1. What is the unique count and total amount for each transaction type?
+
+select txn_type, count(distinct txn_type) unique_count, sum(txn_amount) total_amount
+from customer_transactions
+group by txn_type
+
+
+select * from customer_nodes
+select * from customer_transactions
+select * from regions
 
 
