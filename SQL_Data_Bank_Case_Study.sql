@@ -36,3 +36,20 @@ where end_date != '9999-12-31'
 
 --Q5. What is the median, 80th and 95th percentile for this same reallocation days metric for each region?
 
+With reallocation_cte as (
+select region_id, DATEDIFF(day, start_date, end_date) reallocation_days
+from customer_nodes
+where end_date != '9999-12-31')
+
+select distinct a.region_id, b.region_name, 
+PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY a.reallocation_days) OVER (partition by b.region_name) median,
+PERCENTILE_CONT(0.8) WITHIN GROUP (ORDER BY a.reallocation_days) OVER (partition by b.region_name) percentile_80,
+PERCENTILE_CONT(0.95) WITHIN GROUP (ORDER BY a.reallocation_days) OVER (partition by b.region_name) percentile_90
+from reallocation_cte a 
+left join regions b
+on a.region_id = b.region_id
+
+
+
+
+
