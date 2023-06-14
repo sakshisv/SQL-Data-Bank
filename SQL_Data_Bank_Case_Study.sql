@@ -56,10 +56,14 @@ on a.region_id = b.region_id
 
 --Q1. What is the unique count and total amount for each transaction type?
 
-select txn_type, count(distinct txn_type) unique_count, sum(txn_amount) total_amount
+select txn_type, count(txn_type) unique_count, sum(txn_amount) total_amount
 from customer_transactions
 group by txn_type
 
+--Q2. What is the average total historical deposit counts and amounts for all customers?
+
+select *, LEAD(txn_amount) over (partition by txn_type order by txn_date) historical_amount
+from customer_transactions
 
 select * from customer_nodes
 select * from customer_transactions
