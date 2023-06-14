@@ -65,10 +65,14 @@ group by txn_type
 With deposit_cte as (
 select txn_type, count(*) deposit_counts, sum(txn_amount) total_amount
 from customer_transactions
-where txn_type = 'deposit'
 group by txn_type)
 
-select * from deposit_cte
+select txn_type, avg(deposit_counts) avg_deposit_count, avg(total_amount) avg_total_amount
+from deposit_cte
+where txn_type = 'deposit'
+group by txn_type
+
+
 
 select * from customer_nodes
 select * from customer_transactions
