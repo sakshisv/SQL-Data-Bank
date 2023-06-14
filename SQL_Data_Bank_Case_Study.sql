@@ -62,8 +62,13 @@ group by txn_type
 
 --Q2. What is the average total historical deposit counts and amounts for all customers?
 
-select *, LEAD(txn_amount) over (partition by txn_type order by txn_date) historical_amount
+With deposit_cte as (
+select txn_type, count(*) deposit_counts, sum(txn_amount) total_amount
 from customer_transactions
+where txn_type = 'deposit'
+group by txn_type)
+
+select * from deposit_cte
 
 select * from customer_nodes
 select * from customer_transactions
