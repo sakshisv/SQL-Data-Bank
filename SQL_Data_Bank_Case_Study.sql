@@ -63,19 +63,68 @@ group by txn_type
 --Q2. What is the average total historical deposit counts and amounts for all customers?
 
 With deposit_cte as (
-select txn_type, count(*) deposit_counts, sum(txn_amount) total_amount
+select customer_id, count(*) deposit_count, avg(txn_amount) total_amount
 from customer_transactions
-group by txn_type)
-
-select txn_type, avg(deposit_counts) avg_deposit_count, avg(total_amount) avg_total_amount
-from deposit_cte
 where txn_type = 'deposit'
+group by customer_id
+)
+
+select avg(deposit_counts) avg_deposit_count, avg(total_amount) avg_total_amount
+from deposit_cte
 group by txn_type
 
+WITH total_deposit_amounts AS (
+	SELECT
+		customer_id,
+		count(*) AS deposits_count,
+		avg(txn_amount) AS total_deposit_amount
+	FROM
+		customer_transactions
+	WHERE
+		txn_type = 'deposit'
+	GROUP BY
+		customer_id
+)
+SELECT
+	round(avg(deposits_count),2) AS avg_deposit_count,
+	round(avg(total_deposit_amount),2) AS avg_deposit_amount
+FROM
+	total_deposit_amounts;
 
+WITH 
+	historical --total historical counts and amounts
+AS
+	(
+		select
+			n.customer_id,
+			t.txn_type,
+			count(t.txn_type) count,
+			avg(t.txn_amount) total_amount
+		from customer_transactions t
+		left join customer_nodes n on t.customer_id = n.customer_id
+		left join regions r on n.region_id = r.region_id
+		group by n.customer_id, t.txn_type
+	)
+select
+	avg(count) historical_count,
+	avg(total_amount) total_amount
+from historical
+where txn_type = 'deposit';
 
 select * from customer_nodes
 select * from customer_transactions
 select * from regions
 
-
+WITH cte_deposit AS (
+	SELECT 
+		customer_id,
+		COUNT(txn_type) AS deposit_count,
+		SUM(txn_amount) AS deposit_amount
+	FROM customer_transactions
+	WHERE txn_type = 'deposit'
+	GROUP BY customer_id
+)
+SELECT 
+	AVG(deposit_count) AS avg_deposit_count,
+	AVG(deposit_amount) AS avg_deposit_amount
+FROM cte_deposit;
