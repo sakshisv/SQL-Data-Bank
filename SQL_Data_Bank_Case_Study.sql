@@ -72,6 +72,17 @@ select avg(deposit_count) avg_deposit, avg(total_amount) avg_amount from total_c
 
 --Q3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
 
+select customer_id, DATENAME(MONTH, txn_date) month_name, month(txn_date) months,
+sum(case when txn_type = 'deposit' then 1 else 0 end) as deposit_count,
+sum(case when txn_type = 'purchase' then 1 else 0 end) as purchase_count,
+sum(case when txn_type = 'withdrawl' then 1 else 0 end) as withdrawl_count
+from customer_transactions
+group by customer_id, DATENAME(MONTH, txn_date), month(txn_date)
+
+
+
+
+
 select DATENAME(MONTH, txn_date) month_name, month(txn_date) months, count(customer_id) cust_count from customer_transactions
 where txn_type = 'deposit'
 group by DATENAME(MONTH, txn_date), month(txn_date)
