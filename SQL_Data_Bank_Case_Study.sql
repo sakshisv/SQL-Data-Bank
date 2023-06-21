@@ -62,6 +62,19 @@ group by txn_type
 
 --Q2. What is the average total historical deposit counts and amounts for all customers?
 
+with total_cte as (
+select customer_id, count(*) deposit_count, sum(txn_amount) total_amount
+from customer_transactions
+where txn_type = 'deposit'
+group by customer_id)
+
+select avg(deposit_count) avg_deposit, avg(total_amount) avg_amount from total_cte
+
+--Q3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
+
+
+
+
 With deposit_cte as (
 select customer_id, count(*) deposit_count, avg(txn_amount) total_amount
 from customer_transactions
@@ -69,9 +82,9 @@ where txn_type = 'deposit'
 group by customer_id
 )
 
-select avg(deposit_counts) avg_deposit_count, avg(total_amount) avg_total_amount
+select avg(deposit_count) avg_deposit_count, total_amount as avg_total_amount
 from deposit_cte
-group by txn_type
+
 
 WITH total_deposit_amounts AS (
 	SELECT
