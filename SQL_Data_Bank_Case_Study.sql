@@ -72,72 +72,12 @@ select avg(deposit_count) avg_deposit, avg(total_amount) avg_amount from total_c
 
 --Q3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
 
-
-
-
-With deposit_cte as (
-select customer_id, count(*) deposit_count, avg(txn_amount) total_amount
-from customer_transactions
+select DATENAME(MONTH, txn_date) month_name, month(txn_date) months, count(customer_id) cust_count from customer_transactions
 where txn_type = 'deposit'
-group by customer_id
-)
+group by DATENAME(MONTH, txn_date), month(txn_date)
+having count(txn_type) > 1
 
-select avg(deposit_count) avg_deposit_count, total_amount as avg_total_amount
-from deposit_cte
-
-
-WITH total_deposit_amounts AS (
-	SELECT
-		customer_id,
-		count(*) AS deposits_count,
-		avg(txn_amount) AS total_deposit_amount
-	FROM
-		customer_transactions
-	WHERE
-		txn_type = 'deposit'
-	GROUP BY
-		customer_id
-)
-SELECT
-	round(avg(deposits_count),2) AS avg_deposit_count,
-	round(avg(total_deposit_amount),2) AS avg_deposit_amount
-FROM
-	total_deposit_amounts;
-
-WITH 
-	historical --total historical counts and amounts
-AS
-	(
-		select
-			n.customer_id,
-			t.txn_type,
-			count(t.txn_type) count,
-			avg(t.txn_amount) total_amount
-		from customer_transactions t
-		left join customer_nodes n on t.customer_id = n.customer_id
-		left join regions r on n.region_id = r.region_id
-		group by n.customer_id, t.txn_type
-	)
-select
-	avg(count) historical_count,
-	avg(total_amount) total_amount
-from historical
-where txn_type = 'deposit';
 
 select * from customer_nodes
 select * from customer_transactions
 select * from regions
-
-WITH cte_deposit AS (
-	SELECT 
-		customer_id,
-		COUNT(txn_type) AS deposit_count,
-		SUM(txn_amount) AS deposit_amount
-	FROM customer_transactions
-	WHERE txn_type = 'deposit'
-	GROUP BY customer_id
-)
-SELECT 
-	AVG(deposit_count) AS avg_deposit_count,
-	AVG(deposit_amount) AS avg_deposit_amount
-FROM cte_deposit;
