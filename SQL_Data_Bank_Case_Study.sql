@@ -73,46 +73,32 @@ select avg(deposit_count) avg_deposit, avg(total_amount) avg_amount from total_c
 --Q3. For each month - how many Data Bank customers make more than 1 deposit and either 1 purchase or 1 withdrawal in a single month?
 
 with txn_type_cte as (
-select customer_id, DATENAME(MONTH, txn_date) month_name, month(txn_date) months,
+select customer_id, DATENAME(MONTH, txn_date) month_name, month(txn_date) month,
 sum(case when txn_type = 'deposit' then 1 else 0 end) as deposit_count,
 sum(case when txn_type = 'purchase' then 1 else 0 end) as purchase_count,
 sum(case when txn_type = 'withdrawl' then 1 else 0 end) as withdrawl_count
 from customer_transactions
 group by customer_id, DATENAME(MONTH, txn_date), month(txn_date))
 
-select month_name, months, count(customer_id) cust_count 
+select month_name, month, count(customer_id) cust_count 
 from txn_type_cte
 where deposit_count > 1 and (purchase_count >= 1 or withdrawl_count >= 1)
-group by month_name, months
+group by month_name, month
 
+--Q4. What is the closing balance for each customer at the end of the month?
 
-WITH monthly_transactions AS (
-  SELECT 
-    customer_id, 
-    month(txn_date) AS mth,
-    SUM(CASE WHEN txn_type = 'deposit' THEN 0 ELSE 1 END) AS deposit_count,
-    SUM(CASE WHEN txn_type = 'purchase' THEN 0 ELSE 1 END) AS purchase_count,
-    SUM(CASE WHEN txn_type = 'withdrawal' THEN 1 ELSE 0 END) AS withdrawal_count
-  FROM customer_transactions
-  GROUP BY customer_id, month(txn_date)
-)
+with cte as (
+select customer_id, month(txn_date) month, DATENAME(MONTH, txn_date) month_name,
+sum(case when txn_type = 'deposit' then txn_amount else -txn_amount end) as total_amount
+from customer_transactions
+group by customer_id, month(txn_date), DATENAME(MONTH, txn_date))
 
-SELECT
-  mth,
-  COUNT(DISTINCT customer_id) AS customer_count
-FROM monthly_transactions
-WHERE deposit_count > 1 
-  AND (purchase_count >= 1 OR withdrawal_count >= 1)
-GROUP BY mth
-ORDER BY mth;
+select customer_id, month, month_name,
+sum(total_amount) over (partition by customer_id order by month) as closing_balance
+from cte
 
 
 
-
-select DATENAME(MONTH, txn_date) month_name, month(txn_date) months, count(customer_id) cust_count from customer_transactions
-where txn_type = 'deposit'
-group by DATENAME(MONTH, txn_date), month(txn_date)
-having count(txn_type) > 1
 
 
 select * from customer_nodes
