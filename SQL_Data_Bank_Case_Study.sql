@@ -97,10 +97,4 @@ select customer_id, month, month_name,
 sum(total_amount) over (partition by customer_id order by month) as closing_balance
 from cte
 
-
-
-
-
-select * from customer_nodes
-select * from customer_transactions
-select * from regions
+--------------------------------------------------------------------------------------------------------
